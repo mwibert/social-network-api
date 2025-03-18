@@ -11,7 +11,7 @@ This Social Network API allows you to create, read, update, and delete users and
 1. Clone the repository.
 2. Make an .env file in the root directory with the following information; MONGODB_URI=mongodb://localhost/socialNetworkDB
    PORT=3001
-3. Run `npm install` to install dependencies.
+3. Run `npm i` to install dependencies.
 4. Run `npm run build` to build out necessary folders.
 5. Run `npm run start` to start server and test endpoints
 
