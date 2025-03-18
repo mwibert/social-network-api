@@ -1,14 +1,19 @@
+copilot was used to help debug and write the readme
+
 # Social Network API
 
 ## Description
 
-This Social Network API allows you to create, read, update, and delete users and thoughts. It also supports adding and removing friends as well as reactions to thoughts. The API is built using Express, MongoDB, and Mongoose, and is implemented in TypeScript.
+This Social Network API allows you to create, read, update, and delete users and thoughts as well as deleting thoughts associated with a user once the user is deleted. It also supports adding and removing friends as well as reactions to thoughts. The API is built using Express, MongoDB, and Mongoose, and is implemented in TypeScript.
 
 ## Installation
 
 1. Clone the repository.
-2. Run `npm install` to install dependencies.
-3. Run `npm run dev` to start the development server.
+2. Make an .env file in the root directory with the following information; MONGODB_URI=mongodb://localhost/socialNetworkDB
+   PORT=3001
+3. Run `npm install` to install dependencies.
+4. Run `npm run build` to build out necessary folders.
+5. Run `npm run start` to start server and test endpoints
 
 ## API Endpoints
 
@@ -34,8 +39,4 @@ This Social Network API allows you to create, read, update, and delete users and
 
 ## Walkthrough Video
 
-API non functional at this point
-
-## License
-
-ISC License
+https://drive.google.com/file/d/1gvj7lMhios26xzb9ESQi9qiHt0QB9NjJ/view?usp=sharing
