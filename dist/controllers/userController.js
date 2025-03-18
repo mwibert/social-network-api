@@ -8,111 +8,127 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const models_1 = require("../models");
-const userController = {
-    getUsers(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const users = yield models_1.User.find();
-                res.json(users);
-            }
-            catch (err) {
-                res.status(500).json(err);
-            }
-        });
-    },
-    getSingleUser(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const user = yield models_1.User.findById(req.params.userId)
-                    .populate("thoughts")
-                    .populate("friends");
-                if (!user) {
-                    res.status(404).json({ message: "No user with that ID" });
-                    return;
-                }
-                res.json(user);
-            }
-            catch (err) {
-                res.status(500).json(err);
-            }
-        });
-    },
-    createUser(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const user = yield models_1.User.create(req.body);
-                res.json(user);
-            }
-            catch (err) {
-                res.status(400).json(err);
-            }
-        });
-    },
-    updateUser(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const user = yield models_1.User.findByIdAndUpdate(req.params.userId, req.body, {
-                    new: true,
-                    runValidators: true,
-                });
-                if (!user) {
-                    res.status(404).json({ message: "No user with that ID" });
-                    return;
-                }
-                res.json(user);
-            }
-            catch (err) {
-                res.status(400).json(err);
-            }
-        });
-    },
-    deleteUser(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const user = yield models_1.User.findByIdAndDelete(req.params.userId);
-                if (!user) {
-                    res.status(404).json({ message: "No user with that ID" });
-                    return;
-                }
-                yield models_1.Thought.deleteMany({ _id: { $in: user.thoughts } });
-                res.json({ message: "User and associated thoughts deleted" });
-            }
-            catch (err) {
-                res.status(500).json(err);
-            }
-        });
-    },
-    addFriend(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const user = yield models_1.User.findByIdAndUpdate(req.params.userId, { $addToSet: { friends: req.params.friendId } }, { new: true });
-                if (!user) {
-                    res.status(404).json({ message: "No user with that ID" });
-                    return;
-                }
-                res.json(user);
-            }
-            catch (err) {
-                res.status(400).json(err);
-            }
-        });
-    },
-    removeFriend(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const user = yield models_1.User.findByIdAndUpdate(req.params.userId, { $pull: { friends: req.params.friendId } }, { new: true });
-                if (!user) {
-                    res.status(404).json({ message: "No user with that ID" });
-                    return;
-                }
-                res.json(user);
-            }
-            catch (err) {
-                res.status(400).json(err);
-            }
-        });
-    },
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.default = userController;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.removeFriend = exports.addFriend = exports.deleteUser = exports.updateUser = exports.createUser = exports.getSingleUser = exports.getUsers = void 0;
+const User_1 = __importDefault(require("../models/User"));
+const Thought_1 = __importDefault(require("../models/Thought"));
+// Get all users
+const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield User_1.default.find();
+        res.json(users);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+exports.getUsers = getUsers;
+// Get a single user by id
+const getSingleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield User_1.default.findById(req.params.userId)
+            .populate("thoughts")
+            .populate("friends");
+        if (!user) {
+            return res.status(404).json({ message: "No user with this id!" });
+        }
+        res.json(user);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+exports.getSingleUser = getSingleUser;
+// Create a new user
+const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield User_1.default.create(req.body);
+        res.status(201).json(user);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+exports.createUser = createUser;
+// Update a user
+const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield User_1.default.findByIdAndUpdate(req.params.userId, req.body, {
+            new: true,
+            runValidators: true,
+        });
+        if (!user) {
+            return res.status(404).json({ message: "No user with this id!" });
+        }
+        res.json(user);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+exports.updateUser = updateUser;
+// Delete a user and their thoughts
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield User_1.default.findById(req.params.userId);
+        if (!user) {
+            return res.status(404).json({ message: "No user with this id!" });
+        }
+        // BONUS: Remove the user's associated thoughts
+        yield Thought_1.default.deleteMany({ username: user.username });
+        // Remove the user
+        yield User_1.default.findByIdAndDelete(req.params.userId);
+        res.json({ message: "User and associated thoughts deleted!" });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+exports.deleteUser = deleteUser;
+// Add a friend
+const addFriend = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield User_1.default.findByIdAndUpdate(req.params.userId, { $addToSet: { friends: req.params.friendId } }, { new: true });
+        if (!user) {
+            return res.status(404).json({ message: "No user with this id!" });
+        }
+        res.json(user);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+exports.addFriend = addFriend;
+// Remove a friend
+const removeFriend = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield User_1.default.findByIdAndUpdate(req.params.userId, { $pull: { friends: req.params.friendId } }, { new: true });
+        if (!user) {
+            return res.status(404).json({ message: "No user with this id!" });
+        }
+        res.json(user);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+exports.removeFriend = removeFriend;
+exports.default = {
+    getUsers: exports.getUsers,
+    getSingleUser: exports.getSingleUser,
+    createUser: exports.createUser,
+    updateUser: exports.updateUser,
+    deleteUser: exports.deleteUser,
+    addFriend: exports.addFriend,
+    removeFriend: exports.removeFriend,
+};

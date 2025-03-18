@@ -1,51 +1,16 @@
 import { Schema, model, Document, Types } from "mongoose";
-import moment from "moment";
+import reactionSchema from "./Reaction";
 
-export interface IReaction extends Document {
-  reactionId: Types.ObjectId;
-  reactionBody: string;
-  username: string;
-  createdAt: Date;
-}
-
-const reactionSchema = new Schema<IReaction>(
-  {
-    reactionId: {
-      type: Schema.Types.ObjectId,
-      default: () => new Types.ObjectId(),
-    },
-    reactionBody: {
-      type: String,
-      required: true,
-      maxlength: 280,
-    },
-    username: {
-      type: String,
-      required: true,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      get: (timestamp: Date) =>
-        moment(timestamp).format("MMM DD, YYYY [at] hh:mm a"),
-    },
-  },
-  {
-    toJSON: {
-      getters: true,
-    },
-    id: false,
-  }
-);
-
-export interface IThought extends Document {
+// Define a document interface that extends Mongoose's Document
+interface IThought extends Document {
   thoughtText: string;
   createdAt: Date;
   username: string;
-  reactions: IReaction[];
-  reactionCount: number;
+  // Use a Mongoose DocumentArray type for subdocuments
+  reactions: Types.DocumentArray<any>;
 }
 
+// Create the Thought schema using the extended interface
 const thoughtSchema = new Schema<IThought>(
   {
     thoughtText: {
@@ -57,8 +22,10 @@ const thoughtSchema = new Schema<IThought>(
     createdAt: {
       type: Date,
       default: Date.now,
-      get: (timestamp: Date) =>
-        moment(timestamp).format("MMM DD, YYYY [at] hh:mm a"),
+      get: function (value: any) {
+        // Safely transform the date to a string
+        return value instanceof Date ? value.toLocaleString() : value;
+      },
     },
     username: {
       type: String,
@@ -75,10 +42,10 @@ const thoughtSchema = new Schema<IThought>(
   }
 );
 
-thoughtSchema.virtual("reactionCount").get(function () {
+// Use the merged document type in the virtual
+thoughtSchema.virtual("reactionCount").get(function (this: IThought) {
   return this.reactions.length;
 });
 
-const Thought = model<IThought>("Thought", thoughtSchema);
-
-export default Thought;
+// Export the Thought model typed with IThought
+export default model<IThought>("Thought", thoughtSchema);

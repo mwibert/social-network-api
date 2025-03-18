@@ -1,4 +1,4 @@
-import { Schema, model, Document, Types } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
 export interface IUser extends Document {
   username: string;
@@ -20,7 +20,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       unique: true,
       required: true,
-      match: [/.+@.+\..+/, "Please enter a valid email address"],
+      match: [
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        "Please enter a valid email address",
+      ],
     },
     thoughts: [
       {
@@ -38,6 +41,7 @@ const userSchema = new Schema<IUser>(
   {
     toJSON: {
       virtuals: true,
+      getters: true,
     },
     id: false,
   }

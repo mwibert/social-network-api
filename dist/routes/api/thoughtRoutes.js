@@ -3,22 +3,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const thoughtController_1 = require("../../controllers/thoughtController");
-const router = express_1.default.Router();
+const express_1 = require("express");
+const thoughtController_1 = __importDefault(require("../../controllers/thoughtController"));
+const router = (0, express_1.Router)();
+// /api/thoughts
 router
     .route("/")
-    .get((req, res) => (0, thoughtController_1.getThoughts)(req, res))
-    .post((req, res) => (0, thoughtController_1.createThought)(req, res));
+    .get(thoughtController_1.default.getThoughts)
+    .post(thoughtController_1.default.createThought);
+// /api/thoughts/:thoughtId
 router
     .route("/:thoughtId")
-    .get((req, res) => (0, thoughtController_1.getThoughtById)(req, res))
-    .put((req, res) => (0, thoughtController_1.updateThought)(req, res))
-    .delete((req, res) => (0, thoughtController_1.deleteThought)(req, res));
-router
-    .route("/:thoughtId/reactions")
-    .post((req, res) => (0, thoughtController_1.addReaction)(req, res));
+    .get(thoughtController_1.default.getSingleThought)
+    .put(thoughtController_1.default.updateThought)
+    .delete(thoughtController_1.default.deleteThought);
+// /api/thoughts/:thoughtId/reactions
+router.route("/:thoughtId/reactions").post(thoughtController_1.default.addReaction);
+// /api/thoughts/:thoughtId/reactions/:reactionId
 router
     .route("/:thoughtId/reactions/:reactionId")
-    .delete((req, res) => (0, thoughtController_1.removeReaction)(req, res));
+    .delete(thoughtController_1.default.removeReaction);
 exports.default = router;

@@ -12,7 +12,10 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         unique: true,
         required: true,
-        match: [/.+@.+\..+/, "Please enter a valid email address"],
+        match: [
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            "Please enter a valid email address",
+        ],
     },
     thoughts: [
         {
@@ -29,6 +32,7 @@ const userSchema = new mongoose_1.Schema({
 }, {
     toJSON: {
         virtuals: true,
+        getters: true,
     },
     id: false,
 });

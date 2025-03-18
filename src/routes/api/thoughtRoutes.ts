@@ -1,30 +1,27 @@
-import express, { Router, Request, Response } from "express";
-import {
-  getThoughts,
-  getThoughtById,
-  createThought,
-  updateThought,
-  deleteThought,
-  addReaction,
-  removeReaction,
-} from "../../controllers/thoughtController";
+import { Router } from "express";
+import thoughtController from "../../controllers/thoughtController";
 
-const router: Router = express.Router();
+const router = Router();
 
+// /api/thoughts
 router
   .route("/")
-  .get((req: Request, res: Response) => getThoughts(req, res))
-  .post((req: Request, res: Response) => createThought(req, res));
+  .get(thoughtController.getThoughts)
+  .post(thoughtController.createThought);
+
+// /api/thoughts/:thoughtId
 router
   .route("/:thoughtId")
-  .get((req: Request, res: Response) => getThoughtById(req, res))
-  .put((req: Request, res: Response) => updateThought(req, res))
-  .delete((req: Request, res: Response) => deleteThought(req, res));
-router
-  .route("/:thoughtId/reactions")
-  .post((req: Request, res: Response) => addReaction(req, res));
+  .get(thoughtController.getSingleThought)
+  .put(thoughtController.updateThought)
+  .delete(thoughtController.deleteThought);
+
+// /api/thoughts/:thoughtId/reactions
+router.route("/:thoughtId/reactions").post(thoughtController.addReaction);
+
+// /api/thoughts/:thoughtId/reactions/:reactionId
 router
   .route("/:thoughtId/reactions/:reactionId")
-  .delete((req: Request, res: Response) => removeReaction(req, res));
+  .delete(thoughtController.removeReaction);
 
 export default router;

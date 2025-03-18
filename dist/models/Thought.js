@@ -4,32 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
-const moment_1 = __importDefault(require("moment"));
-const reactionSchema = new mongoose_1.Schema({
-    reactionId: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        default: () => new mongoose_1.Types.ObjectId(),
-    },
-    reactionBody: {
-        type: String,
-        required: true,
-        maxlength: 280,
-    },
-    username: {
-        type: String,
-        required: true,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-        get: (timestamp) => (0, moment_1.default)(timestamp).format("MMM DD, YYYY [at] hh:mm a"),
-    },
-}, {
-    toJSON: {
-        getters: true,
-    },
-    id: false,
-});
+const Reaction_1 = __importDefault(require("./Reaction"));
+// Create the Thought schema using the extended interface
 const thoughtSchema = new mongoose_1.Schema({
     thoughtText: {
         type: String,
@@ -40,13 +16,16 @@ const thoughtSchema = new mongoose_1.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-        get: (timestamp) => (0, moment_1.default)(timestamp).format("MMM DD, YYYY [at] hh:mm a"),
+        get: function (value) {
+            // Safely transform the date to a string
+            return value instanceof Date ? value.toLocaleString() : value;
+        },
     },
     username: {
         type: String,
         required: true,
     },
-    reactions: [reactionSchema],
+    reactions: [Reaction_1.default],
 }, {
     toJSON: {
         virtuals: true,
@@ -54,8 +33,9 @@ const thoughtSchema = new mongoose_1.Schema({
     },
     id: false,
 });
+// Use the merged document type in the virtual
 thoughtSchema.virtual("reactionCount").get(function () {
     return this.reactions.length;
 });
-const Thought = (0, mongoose_1.model)("Thought", thoughtSchema);
-exports.default = Thought;
+// Export the Thought model typed with IThought
+exports.default = (0, mongoose_1.model)("Thought", thoughtSchema);
